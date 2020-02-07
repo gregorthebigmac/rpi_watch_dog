@@ -32,4 +32,4 @@
 *.app
 
 # No longer tracking config file
-config/
+*.cfg
