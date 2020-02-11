@@ -34,6 +34,7 @@ private:
 	void dump_mac_addr();
 	void dump_hosts();
 	void dump_ip_addr();
+	void dump_all();
 };
 
 
@@ -56,12 +57,87 @@ void load_settings::load_config_file() {
 		}
 		if (_debug_mode) { dump_file_lines(); }
 		fin.close();
+		// purging blank lines
+		for (int i = 0; i < m_file_lines.size(); i++) {
+			std::string temp = m_file_lines[i];
+			if (temp[0] == NULL) {
+				m_file_lines.erase(m_file_lines.begin()+i);
+			}
+		}
+		if (_debug_mode) { dump_file_lines(); }
 	}
 	else std::cout << "ERROR: config/settings.cfg failed to open!" << std::endl;
+	parse_config_file();
 }
 
 void load_settings::parse_config_file() {
-	
+	if (_debug_mode) { std::cout << "Entering parse_config_file..." << std::endl; }
+	std::vector<std::string> temp_vec_st;
+	for (int i = 0; i < m_file_lines.size(); i++) {
+		std::string temp = m_file_lines[i];
+		if (_debug_mode) { std::cout << "temp = [" << temp << "]" << std::endl; }
+		std::size_t found = temp.find('\t');
+		if (found != std::string::npos) {
+			std::string temp2 = temp.substr(0, found);
+			if (temp2 == "iface") {
+				temp_vec_st.push_back(temp2);
+				temp.erase(0, found);
+				if (_debug_mode) { std::cout << "found interface! " << temp2 << std::endl; }
+			}
+			else if (temp2 == "host") {
+				temp_vec_st.push_back(temp2);
+				temp.erase(0, found);
+				if (_debug_mode) { std::cout << "found host! " << temp2 << std::endl; }
+			}
+			else {
+				if (temp[0] == '#')
+					continue;
+				else {
+				std::cout << "ERROR: Garbage info in line " << i << " of settings.cfg" << std::endl;
+				std::cout << "bad entry: " << temp2 << std::endl;
+				continue;
+				}
+			}
+		}
+		while (temp[0] == '\t') {
+			if (_debug_mode) { std::cout << "Entering while erase \\t," << std::endl; }
+			temp.erase(0, 1);
+			std::cout << "temp = " << temp << std::endl;
+		}
+		found = temp.find('\t');
+		if (found != std::string::npos) {
+			std::string temp2 = temp.substr(0, found);
+			if (temp_vec_st[0] == "iface") {
+				temp_vec_st.push_back(temp2);
+				temp.erase(0, found);
+			}
+			else if (temp_vec_st[0] == "host") {
+				temp_vec_st.push_back(temp2);
+				temp.erase(0, found);
+			}
+			else std::cout << "Garbage data. Moving on..." << std::endl;
+		}
+		while (temp[0] == '\t') {
+			if (_debug_mode) { std::cout << "Entering while erase \\t," << std::endl; }
+			temp.erase(0, 1);
+			std::cout << "temp = " << temp << std::endl;
+		}
+		temp_vec_st.push_back(temp);
+		if (temp_vec_st[0] == "iface") {
+			if (_debug_mode) { std::cout << "adding " << temp_vec_st[1] << " to interfaces" << std::endl; }
+			m_interfaces.push_back(temp_vec_st[1]);
+			if (_debug_mode) { std::cout << "adding " << temp_vec_st[2] << " to mac addresses" << std::endl; }
+			m_mac_addr.push_back(temp_vec_st[2]);
+		}
+		else if (temp_vec_st[0] == "host") {
+			if (_debug_mode) { std::cout << "adding " << temp_vec_st[1] << " to hosts" << std::endl; }
+			m_hosts.push_back(temp_vec_st[1]);
+			if (_debug_mode) { std::cout << "adding " << temp_vec_st[2] << " to ip addresses" << std::endl; }
+			m_ip_addr.push_back(temp_vec_st[2]);
+		}
+		temp_vec_st.clear();
+	}
+	dump_all();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,4 +176,12 @@ void load_settings::dump_ip_addr() {
 	for (int i = 0; i < m_ip_addr.size(); i++) {
 		std::cout << "[" << i << "] " << m_ip_addr[i] << std::endl;
 	}
+}
+
+void load_settings::dump_all() {
+	dump_file_lines();
+	dump_interfaces();
+	dump_mac_addr();
+	dump_hosts();
+	dump_ip_addr();
 }

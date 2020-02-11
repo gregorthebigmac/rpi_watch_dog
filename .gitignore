@@ -31,3 +31,6 @@
 *.out
 *.app
 bin/
+
+# Don't save .vscode files
+.vscode/
