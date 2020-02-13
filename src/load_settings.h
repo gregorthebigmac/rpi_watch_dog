@@ -17,6 +17,7 @@ public:
 	
 	void load_config_file();
 	void parse_config_file();
+	int find_first_whitespace_char(std::string str);
 	
 	// debug stuff
 	void toggle_debug_mode() { _debug_mode = !_debug_mode; }

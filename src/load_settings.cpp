@@ -34,21 +34,21 @@ void load_settings::load_config_file() {
 
 void load_settings::parse_config_file() {
 	if (_debug_mode) { std::cout << "Entering parse_config_file..." << std::endl; }
-	std::vector<std::string> temp_vec_st;
+	std::vector<std::string> temp_vec_str;
 	for (int i = 0; i < m_file_lines.size(); i++) {
 		std::string temp = m_file_lines[i];
 		if (_debug_mode) { std::cout << "temp = [" << temp << "]" << std::endl; }
-		std::size_t found1 = temp.find('\t');
-		if (found1 != std::string::npos) {
-			std::string temp2 = temp.substr(0, found1);
+		int found = find_first_whitespace_char(temp);
+		if (found != -1) {
+			std::string temp2 = temp.substr(0, found);
 			if (temp2 == "iface") {
-				temp_vec_st.push_back(temp2);
-				temp.erase(0, found1);
+				temp_vec_str.push_back(temp2);
+				temp.erase(0, found);
 				if (_debug_mode) { std::cout << "found interface! " << temp2 << std::endl; }
 			}
 			else if (temp2 == "host") {
-				temp_vec_st.push_back(temp2);
-				temp.erase(0, found1);
+				temp_vec_str.push_back(temp2);
+				temp.erase(0, found);
 				if (_debug_mode) { std::cout << "found host! " << temp2 << std::endl; }
 			}
 			else {
@@ -67,16 +67,16 @@ void load_settings::parse_config_file() {
 			temp.erase(0, 1);
 			std::cout << "temp = " << temp << std::endl;
 		}
-		found1 = temp.find('\t');
-		if (found1 != std::string::npos) {
-			std::string temp2 = temp.substr(0, found1);
-			if (temp_vec_st[0] == "iface") {
-				temp_vec_st.push_back(temp2);
-				temp.erase(0, found1);
+		found = find_first_whitespace_char(temp);
+		if (found != -1) {
+			std::string temp2 = temp.substr(0, found);
+			if (temp_vec_str[0] == "iface") {
+				temp_vec_str.push_back(temp2);
+				temp.erase(0, found);
 			}
-			else if (temp_vec_st[0] == "host") {
-				temp_vec_st.push_back(temp2);
-				temp.erase(0, found1);
+			else if (temp_vec_str[0] == "host") {
+				temp_vec_str.push_back(temp2);
+				temp.erase(0, found);
 			}
 			else std::cout << "Garbage data. Moving on..." << std::endl;
 		}
@@ -86,22 +86,32 @@ void load_settings::parse_config_file() {
 			temp.erase(0, 1);
 			std::cout << "temp = " << temp << std::endl;
 		}
-		temp_vec_st.push_back(temp);
-		if (temp_vec_st[0] == "iface") {
-			if (_debug_mode) { std::cout << "adding " << temp_vec_st[1] << " to interfaces" << std::endl; }
-			m_interfaces.push_back(temp_vec_st[1]);
-			if (_debug_mode) { std::cout << "adding " << temp_vec_st[2] << " to mac addresses" << std::endl; }
-			m_mac_addr.push_back(temp_vec_st[2]);
+		temp_vec_str.push_back(temp);
+		if (temp_vec_str[0] == "iface") {
+			if (_debug_mode) { std::cout << "adding " << temp_vec_str[1] << " to interfaces" << std::endl; }
+			m_interfaces.push_back(temp_vec_str[1]);
+			if (_debug_mode) { std::cout << "adding " << temp_vec_str[2] << " to mac addresses" << std::endl; }
+			m_mac_addr.push_back(temp_vec_str[2]);
 		}
-		else if (temp_vec_st[0] == "host") {
-			if (_debug_mode) { std::cout << "adding " << temp_vec_st[1] << " to hosts" << std::endl; }
-			m_hosts.push_back(temp_vec_st[1]);
-			if (_debug_mode) { std::cout << "adding " << temp_vec_st[2] << " to ip addresses" << std::endl; }
-			m_ip_addr.push_back(temp_vec_st[2]);
+		else if (temp_vec_str[0] == "host") {
+			if (_debug_mode) { std::cout << "adding " << temp_vec_str[1] << " to hosts" << std::endl; }
+			m_hosts.push_back(temp_vec_str[1]);
+			if (_debug_mode) { std::cout << "adding " << temp_vec_str[2] << " to ip addresses" << std::endl; }
+			m_ip_addr.push_back(temp_vec_str[2]);
 		}
-		temp_vec_st.clear();
+		temp_vec_str.clear();
 	}
 	dump_all();
+}
+
+int load_settings::find_first_whitespace_char(std::string str) {
+	for (int i = 0; i < str.size(); i++) {
+		if (isspace(str[i])) {
+			size_t found_it = i;
+			return found_it;
+		}
+	}
+	return -1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

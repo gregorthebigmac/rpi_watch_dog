@@ -1,5 +1,5 @@
 #include "command/command.hpp"
-#include "load_settings.hpp"
+#include "load_settings.h"
 
 using std::cout;
 using std::endl;
