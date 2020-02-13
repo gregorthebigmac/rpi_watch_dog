@@ -4,6 +4,7 @@
 #include <fstream>		// used for loading config file
 #include <string>		// used for storing config stuff
 #include <vector>		// used for storing multiple lines of config stuff
+#include <cctype>		// used for purging white space from config file
 
 class load_settings {
 public:
@@ -76,17 +77,17 @@ void load_settings::parse_config_file() {
 	for (int i = 0; i < m_file_lines.size(); i++) {
 		std::string temp = m_file_lines[i];
 		if (_debug_mode) { std::cout << "temp = [" << temp << "]" << std::endl; }
-		std::size_t found = temp.find('\t');
-		if (found != std::string::npos) {
-			std::string temp2 = temp.substr(0, found);
+		std::size_t found1 = temp.find('\t');
+		if (found1 != std::string::npos) {
+			std::string temp2 = temp.substr(0, found1);
 			if (temp2 == "iface") {
 				temp_vec_st.push_back(temp2);
-				temp.erase(0, found);
+				temp.erase(0, found1);
 				if (_debug_mode) { std::cout << "found interface! " << temp2 << std::endl; }
 			}
 			else if (temp2 == "host") {
 				temp_vec_st.push_back(temp2);
-				temp.erase(0, found);
+				temp.erase(0, found1);
 				if (_debug_mode) { std::cout << "found host! " << temp2 << std::endl; }
 			}
 			else {
@@ -99,26 +100,28 @@ void load_settings::parse_config_file() {
 				}
 			}
 		}
-		while (temp[0] == '\t') {
-			if (_debug_mode) { std::cout << "Entering while erase \\t," << std::endl; }
+		if (_debug_mode) { std::cout << "Entering while erase white space..." << std::endl; }
+		while (isspace(temp[0])) {
+			std::cout << "Found whitespace character! Purging..." << std::endl;
 			temp.erase(0, 1);
 			std::cout << "temp = " << temp << std::endl;
 		}
-		found = temp.find('\t');
-		if (found != std::string::npos) {
-			std::string temp2 = temp.substr(0, found);
+		found1 = temp.find('\t');
+		if (found1 != std::string::npos) {
+			std::string temp2 = temp.substr(0, found1);
 			if (temp_vec_st[0] == "iface") {
 				temp_vec_st.push_back(temp2);
-				temp.erase(0, found);
+				temp.erase(0, found1);
 			}
 			else if (temp_vec_st[0] == "host") {
 				temp_vec_st.push_back(temp2);
-				temp.erase(0, found);
+				temp.erase(0, found1);
 			}
 			else std::cout << "Garbage data. Moving on..." << std::endl;
 		}
-		while (temp[0] == '\t') {
-			if (_debug_mode) { std::cout << "Entering while erase \\t," << std::endl; }
+		if (_debug_mode) { std::cout << "Entering while erase white space..." << std::endl; }
+		while (isspace(temp[0])) {
+			std::cout << "Found whitespace character! Purging..." << std::endl;
 			temp.erase(0, 1);
 			std::cout << "temp = " << temp << std::endl;
 		}
