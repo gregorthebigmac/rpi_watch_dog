@@ -1,5 +1,5 @@
 # OBJS specifies which files to compile as part of the project
-OBJS = src/rpi_watch_dog.cpp
+OBJS = src/rpi_watch_dog.cpp src/load_settings.cpp
 
 # CC specifies which compiler we're using
 CC = g++
