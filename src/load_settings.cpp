@@ -6,6 +6,7 @@ load_settings::load_settings() {
 load_settings::~load_settings() {}
 
 void load_settings::load_config_file() {
+	std::vector<std::string> file_lines;
 	std::ifstream fin;
 	if (_debug_mode) { std::cout << "Opening settings.cfg... "; }
 	fin.open("config/settings.cfg");
@@ -14,29 +15,29 @@ void load_settings::load_config_file() {
 		while(!fin.eof()) {
 			std::string temp;
 			getline(fin, temp);
-			m_file_lines.push_back(temp);
+			file_lines.push_back(temp);
 			if (_debug_mode) { std::cout << "temp = [" << temp << "]" << std::endl; }
 		}
-		if (_debug_mode) { dump_file_lines(); }
+		if (_debug_mode) { dump_file_lines(file_lines); }
 		fin.close();
 		// purging blank lines
-		for (int i = 0; i < m_file_lines.size(); i++) {
-			std::string temp = m_file_lines[i];
+		for (int i = 0; i < file_lines.size(); i++) {
+			std::string temp = file_lines[i];
 			if (temp[0] == NULL) {
-				m_file_lines.erase(m_file_lines.begin()+i);
+				file_lines.erase(file_lines.begin()+i);
 			}
 		}
-		if (_debug_mode) { dump_file_lines(); }
+		if (_debug_mode) { dump_file_lines(file_lines); }
 	}
 	else std::cout << "ERROR: config/settings.cfg failed to open!" << std::endl;
-	parse_config_file();
+	parse_config_file(file_lines);
 }
 
-void load_settings::parse_config_file() {
+void load_settings::parse_config_file(std::vector<std::string> file_lines) {
 	if (_debug_mode) { std::cout << "Entering parse_config_file..." << std::endl; }
 	std::vector<std::string> temp_vec_str;
-	for (int i = 0; i < m_file_lines.size(); i++) {
-		std::string temp = m_file_lines[i];
+	for (int i = 0; i < file_lines.size(); i++) {
+		std::string temp = file_lines[i];
 		if (_debug_mode) { std::cout << "temp = [" << temp << "]" << std::endl; }
 		int found = find_first_whitespace_char(temp);
 		if (found != -1) {
@@ -117,10 +118,10 @@ int load_settings::find_first_whitespace_char(std::string str) {
 ////////////////////////////////////////////////////////////////////////////////
 // 								DEBUG FUNCTIONS								  //
 ////////////////////////////////////////////////////////////////////////////////
-void load_settings::dump_file_lines() {
-	std::cout << "Dumping contents of m_file_lines..." << std::endl;
-	for (int i = 0; i < m_file_lines.size(); i++) {
-		std::cout << "[" << i << "] " << m_file_lines[i] << std::endl;
+void load_settings::dump_file_lines(std::vector<std::string> file_lines) {
+	std::cout << "Dumping contents of file_lines..." << std::endl;
+	for (int i = 0; i < file_lines.size(); i++) {
+		std::cout << "[" << i << "] " << file_lines[i] << std::endl;
 	}
 }
 
@@ -153,7 +154,6 @@ void load_settings::dump_ip_addr() {
 }
 
 void load_settings::dump_all() {
-	dump_file_lines();
 	dump_interfaces();
 	dump_mac_addr();
 	dump_hosts();

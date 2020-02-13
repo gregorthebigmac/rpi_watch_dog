@@ -32,5 +32,8 @@
 *.app
 bin/
 
-# Don't save .vscode files
+# Don't track .vscode files
 .vscode/
+
+# Don't track output_test_data
+output_test_data/

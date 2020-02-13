@@ -1,5 +1,5 @@
 # OBJS specifies which files to compile as part of the project
-OBJS = src/rpi_watch_dog.cpp src/load_settings.cpp
+OBJS = src/wake_on_lan.cpp src/load_settings.cpp
 
 # CC specifies which compiler we're using
 CC = g++
@@ -12,7 +12,7 @@ COMPILER_FLAGS = -w
 #LINKER_FLAGS = 
 
 # OBJ_NAME specifies the name of our executable
-OBJ_NAME = rpi_watch_dog
+OBJ_NAME = wake_on_lan
 
 # This is the target that compiles our executable
 all: $(OBJS)
